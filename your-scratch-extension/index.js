@@ -41,7 +41,7 @@ class Scratch3YourExtension {
                     blockType: BlockType.REPORTER,
 
                     // label to display on the block
-                    text: 'My first block [MY_NUMBER] and [MY_STRING]',
+                    text: 'Title for Book [BOOK_NUMBER]',
 
                     // true if this block should end a stack
                     terminal: false,
@@ -54,31 +54,28 @@ class Scratch3YourExtension {
 
                     // arguments used in the block
                     arguments: {
-                        MY_NUMBER: {
-                            // default value before the user sets something
-                            defaultValue: 123,
-
-                            // type/shape of the parameter - choose from:
-                            //     ArgumentType.ANGLE - numeric value with an angle picker
-                            //     ArgumentType.BOOLEAN - true/false value
-                            //     ArgumentType.COLOR - numeric value with a colour picker
-                            //     ArgumentType.NUMBER - numeric value
-                            //     ArgumentType.STRING - text value
-                            //     ArgumentType.NOTE - midi music value with a piano picker
+                        BOOK_NUMBER: {
+                            defaultValue: 1718500564,
                             type: ArgumentType.NUMBER
                         },
-                        MY_STRING: {
-                            // default value before the user sets something
-                            defaultValue: 'hello',
-
-                            // type/shape of the parameter - choose from:
-                            //     ArgumentType.ANGLE - numeric value with an angle picker
-                            //     ArgumentType.BOOLEAN - true/false value
-                            //     ArgumentType.COLOR - numeric value with a colour picker
-                            //     ArgumentType.NUMBER - numeric value
-                            //     ArgumentType.STRING - text value
-                            //     ArgumentType.NOTE - midi music value with a piano picker
-                            type: ArgumentType.STRING
+                        {
+                            // function where your code logic lives
+                            opcode: 'mySecondBlock',
+                    
+                            // type of block
+                            blockType: BlockType.REPORTER,
+                    
+                            // label to display on the block
+                            text: 'Syllables in [MY_TEXT]',
+                    
+                            // arguments used in the block
+                            arguments: {
+                              MY_TEXT: {
+                                defaultValue: 'Hello World',
+                    
+                                // type/shape of the parameter
+                                type: ArgumentType.STRING
+                              }
                         }
                     }
                 }
@@ -91,10 +88,20 @@ class Scratch3YourExtension {
      * implementation of the block with the opcode that matches this name
      *  this will be called when the block is used
      */
-    myFirstBlock ({ MY_NUMBER, MY_STRING }) {
-        // example implementation to return a string
-        return MY_STRING + ' : doubled would be ' + (MY_NUMBER * 2);
-    }
-}
+    myFirstBlock ({ BOOK_NUMBER }) {
+        return fetch('https://openlibrary.org/isbn/' + BOOK_NUMBER + '.json')
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            }
+            else {
+              return { title: 'Unknown' };
+            }
+          })
+          .then((bookinfo) => {
+            return bookinfo.title;
+          });
+      }
+
 
 module.exports = Scratch3YourExtension;
